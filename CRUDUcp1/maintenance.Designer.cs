@@ -210,7 +210,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(1192, 450);
+            this.ClientSize = new System.Drawing.Size(1266, 450);
             this.Controls.Add(this.btnLaporan);
             this.Controls.Add(this.lblMessages);
             this.Controls.Add(this.btnAnalisis);
@@ -230,7 +230,6 @@
             this.Controls.Add(this.label2);
             this.Name = "Maintenance";
             this.Text = "maintenance";
-           
             ((System.ComponentModel.ISupportInitialize)(this.dgvMaintenance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

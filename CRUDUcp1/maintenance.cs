@@ -463,47 +463,74 @@ namespace CRUDUcp1
 
         private void dgvMaintenance_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0) // Pastikan klik pada baris dan kolom yang valid
+            // Pastikan baris yang diklik valid (bukan header kolom)
+            if (e.RowIndex >= 0)
             {
+                // Mendapatkan baris yang saat ini diklik
                 DataGridViewRow row = dgvMaintenance.Rows[e.RowIndex];
 
-                // Isi textbox keterangan
-                txtKeterangan.Text = row.Cells["Keterangan"].Value?.ToString();
-
-                // Isi tanggal maintenance
-                if (DateTime.TryParse(row.Cells["Tanggal_Maintenance"].Value?.ToString(), out DateTime tanggal))
+                // --- Mengisi ComboBox Nama Kamera ---
+                // Mendapatkan nilai NamaKamera dari sel DataGridView
+                string namaKameraDariDG = row.Cells["NamaKamera"].Value?.ToString() ?? string.Empty;
+                // Mencari indeks item di ComboBox yang sesuai dengan nilai dari DataGridView
+                int indexKamera = cmbKamera.FindStringExact(namaKameraDariDG);
+                if (indexKamera != -1)
                 {
-                    dtpMaintenance.Value = tanggal;
+                    // Jika ditemukan, set SelectedIndex ComboBox
+                    cmbKamera.SelectedIndex = indexKamera;
                 }
                 else
                 {
-                    MessageBox.Show("Format tanggal tidak valid pada baris yang dipilih.");
-                    // Opsional: reset dtpMaintenance.Value ke tanggal default atau kosongkan jika tidak valid
+                    // Opsi: Jika nama kamera tidak ada di ComboBox,
+                    // kamu bisa set teksnya secara langsung (jika ComboBoxeditable)
+                    // atau tambahkan item baru.
+                    // Untuk ComboBox yang terikat data, sebaiknya pastikan data ComboBox lengkap.
+                    cmbKamera.Text = namaKameraDariDG; // Ini akan set teks tapi mungkin tidak memilih item jika tidak ada
                 }
 
-                // Ambil nilai ID dari DataGrid, lalu set SelectedValue ComboBox berdasarkan ID
-                // Penting: Pastikan kolom ID_Kamera dan ID_Teknisi masih tersedia (walaupun mungkin tidak terlihat)
-                // di DataTable yang diikat ke DataGridView.
-                object idKameraValue = row.Cells["ID_Kamera"].Value;
-                object idTeknisiValue = row.Cells["ID_Teknisi"].Value;
 
-                if (idKameraValue != DBNull.Value && idKameraValue != null)
+                // --- Mengisi ComboBox Nama Teknisi ---
+                string namaTeknisiDariDG = row.Cells["Nama_Teknisi"].Value?.ToString() ?? string.Empty;
+                int indexTeknisi = cmbTeknisi.FindStringExact(namaTeknisiDariDG);
+                if (indexTeknisi != -1)
                 {
-                    cmbKamera.SelectedValue = idKameraValue;
+                    cmbTeknisi.SelectedIndex = indexTeknisi;
                 }
                 else
                 {
-                    cmbKamera.SelectedIndex = 0; // Pilih item default jika ID_Kamera null/DBNull
+                    cmbTeknisi.Text = namaTeknisiDariDG;
                 }
 
-                if (idTeknisiValue != DBNull.Value && idTeknisiValue != null)
+                // --- Mengisi DateTimePicker Tanggal Maintenance ---
+                // Mendapatkan nilai Tanggal_Maintenan dari sel DataGridView
+                object tanggalObj = row.Cells["Tanggal_Maintenance"].Value;
+                if (tanggalObj != null && tanggalObj != DBNull.Value)
                 {
-                    cmbTeknisi.SelectedValue = idTeknisiValue;
+                    // Coba parsing ke DateTime. Pastikan format tanggal di database konsisten.
+                    if (DateTime.TryParse(tanggalObj.ToString(), out DateTime tanggalMaintenance))
+                    {
+                        dtpMaintenance.Value = tanggalMaintenance;
+                    }
+                    else
+                    {
+                        // Jika parsing gagal, kamu bisa menampilkan pesan error
+                        // atau set ke tanggal default, misal tanggal hari ini.
+                        MessageBox.Show("Format tanggal maintenance tidak valid: " + tanggalObj.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        dtpMaintenance.Value = DateTime.Now; // Set ke tanggal hari ini sebagai fallback
+                    }
                 }
                 else
                 {
-                    cmbTeknisi.SelectedIndex = 0; // Pilih item default jika ID_Teknisi null/DBNull
+                    // Jika nilai tanggal di database null atau kosong
+                    dtpMaintenance.Value = DateTime.Now; // Set ke tanggal hari ini
                 }
+
+
+                // --- Mengisi TextBox Keterangan ---
+                // Mengambil nilai Keterangan dari sel DataGridView.
+                // Menggunakan null-conditional operator (?) dan null-coalescing operator (??)
+                // untuk menangani kemungkinan nilai DBNull atau null.
+                txtKeterangan.Text = row.Cells["Keterangan"].Value?.ToString() ?? string.Empty;
             }
         }
 
