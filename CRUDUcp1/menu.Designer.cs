@@ -32,6 +32,7 @@
             this.btnKamera = new System.Windows.Forms.Button();
             this.btnRiwayat = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnLogout = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -75,12 +76,23 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // btnLogout
+            // 
+            this.btnLogout.Location = new System.Drawing.Point(298, 373);
+            this.btnLogout.Name = "btnLogout";
+            this.btnLogout.Size = new System.Drawing.Size(88, 34);
+            this.btnLogout.TabIndex = 4;
+            this.btnLogout.Text = "Logout";
+            this.btnLogout.UseVisualStyleBackColor = true;
+            this.btnLogout.Click += new System.EventHandler(this.button1_Click);
+            // 
             // menu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(996, 450);
+            this.Controls.Add(this.btnLogout);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btnRiwayat);
             this.Controls.Add(this.btnKamera);
@@ -98,5 +110,6 @@
         private System.Windows.Forms.Button btnKamera;
         private System.Windows.Forms.Button btnRiwayat;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button btnLogout;
     }
 }

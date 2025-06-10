@@ -38,9 +38,13 @@
             this.dtpMaintenance = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.txtIDKamera = new System.Windows.Forms.TextBox();
-            this.txtIDTeknisi = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.cmbKamera = new System.Windows.Forms.ComboBox();
+            this.cmbTeknisi = new System.Windows.Forms.ComboBox();
+            this.btnBack = new System.Windows.Forms.Button();
+            this.btnAnalisis = new System.Windows.Forms.Button();
+            this.lblMessages = new System.Windows.Forms.Label();
+            this.btnLaporan = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMaintenance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -123,9 +127,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(63, 44);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(74, 16);
+            this.label1.Size = new System.Drawing.Size(94, 16);
             this.label1.TabIndex = 11;
-            this.label1.Text = "ID_Kamera";
+            this.label1.Text = "Nama Kamera";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label4
@@ -133,24 +137,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(63, 85);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 16);
+            this.label4.Size = new System.Drawing.Size(91, 16);
             this.label4.TabIndex = 12;
-            this.label4.Text = "ID_Teknisi";
-            // 
-            // txtIDKamera
-            // 
-            this.txtIDKamera.Location = new System.Drawing.Point(278, 44);
-            this.txtIDKamera.Name = "txtIDKamera";
-            this.txtIDKamera.Size = new System.Drawing.Size(100, 22);
-            this.txtIDKamera.TabIndex = 13;
-            this.txtIDKamera.TextChanged += new System.EventHandler(this.txtIDKamera_TextChanged);
-            // 
-            // txtIDTeknisi
-            // 
-            this.txtIDTeknisi.Location = new System.Drawing.Point(278, 82);
-            this.txtIDTeknisi.Name = "txtIDTeknisi";
-            this.txtIDTeknisi.Size = new System.Drawing.Size(100, 22);
-            this.txtIDTeknisi.TabIndex = 14;
+            this.label4.Text = "Nama Teknisi";
             // 
             // pictureBox1
             // 
@@ -161,15 +150,74 @@
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
             // 
+            // cmbKamera
+            // 
+            this.cmbKamera.FormattingEnabled = true;
+            this.cmbKamera.Location = new System.Drawing.Point(278, 41);
+            this.cmbKamera.Name = "cmbKamera";
+            this.cmbKamera.Size = new System.Drawing.Size(121, 24);
+            this.cmbKamera.TabIndex = 16;
+            // 
+            // cmbTeknisi
+            // 
+            this.cmbTeknisi.FormattingEnabled = true;
+            this.cmbTeknisi.Location = new System.Drawing.Point(278, 77);
+            this.cmbTeknisi.Name = "cmbTeknisi";
+            this.cmbTeknisi.Size = new System.Drawing.Size(121, 24);
+            this.cmbTeknisi.TabIndex = 17;
+            // 
+            // btnBack
+            // 
+            this.btnBack.Location = new System.Drawing.Point(908, 44);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(75, 23);
+            this.btnBack.TabIndex = 18;
+            this.btnBack.Text = "Back";
+            this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
+            // 
+            // btnAnalisis
+            // 
+            this.btnAnalisis.Location = new System.Drawing.Point(908, 96);
+            this.btnAnalisis.Name = "btnAnalisis";
+            this.btnAnalisis.Size = new System.Drawing.Size(75, 23);
+            this.btnAnalisis.TabIndex = 19;
+            this.btnAnalisis.Text = "Analisis";
+            this.btnAnalisis.UseVisualStyleBackColor = true;
+            this.btnAnalisis.Click += new System.EventHandler(this.btnAnalisis_Click);
+            // 
+            // lblMessages
+            // 
+            this.lblMessages.AutoSize = true;
+            this.lblMessages.Location = new System.Drawing.Point(912, 159);
+            this.lblMessages.Name = "lblMessages";
+            this.lblMessages.Size = new System.Drawing.Size(71, 16);
+            this.lblMessages.TabIndex = 20;
+            this.lblMessages.Text = "Messages";
+            // 
+            // btnLaporan
+            // 
+            this.btnLaporan.Location = new System.Drawing.Point(503, 201);
+            this.btnLaporan.Name = "btnLaporan";
+            this.btnLaporan.Size = new System.Drawing.Size(75, 23);
+            this.btnLaporan.TabIndex = 21;
+            this.btnLaporan.Text = "Laporan";
+            this.btnLaporan.UseVisualStyleBackColor = true;
+            this.btnLaporan.Click += new System.EventHandler(this.btnLaporan_Click);
+            // 
             // Maintenance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1192, 450);
+            this.Controls.Add(this.btnLaporan);
+            this.Controls.Add(this.lblMessages);
+            this.Controls.Add(this.btnAnalisis);
+            this.Controls.Add(this.btnBack);
+            this.Controls.Add(this.cmbTeknisi);
+            this.Controls.Add(this.cmbKamera);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.txtIDTeknisi);
-            this.Controls.Add(this.txtIDKamera);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dtpMaintenance);
@@ -182,6 +230,7 @@
             this.Controls.Add(this.label2);
             this.Name = "Maintenance";
             this.Text = "maintenance";
+           
             ((System.ComponentModel.ISupportInitialize)(this.dgvMaintenance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
@@ -200,8 +249,12 @@
         private System.Windows.Forms.DateTimePicker dtpMaintenance;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox txtIDKamera;
-        private System.Windows.Forms.TextBox txtIDTeknisi;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ComboBox cmbKamera;
+        private System.Windows.Forms.ComboBox cmbTeknisi;
+        private System.Windows.Forms.Button btnBack;
+        private System.Windows.Forms.Button btnAnalisis;
+        private System.Windows.Forms.Label lblMessages;
+        private System.Windows.Forms.Button btnLaporan;
     }
 }

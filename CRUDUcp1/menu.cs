@@ -26,7 +26,12 @@ namespace CRUDUcp1
 
         private void btnTeknisi_Click(object sender, EventArgs e)
         {
+            this.Hide(); // Sembunyikan menu
             Teknisi t = new Teknisi();
+
+            // Saat form Teknisi ditutup, tampilkan kembali menu
+            t.FormClosed += (s, args) => this.Show();
+
             t.Show();
         }
 
@@ -39,6 +44,19 @@ namespace CRUDUcp1
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Anda yakin ingin logout?", "Konfirmasi Logout", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                this.Hide(); // Sembunyikan form menu
+                Login login = new Login(); // Buat instance baru form login
+                login.Show(); // Tampilkan form login
+            }
+            // Jika pilih "No", tidak melakukan apa-apa
         }
     }
 }

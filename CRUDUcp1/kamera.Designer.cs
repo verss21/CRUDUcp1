@@ -40,6 +40,9 @@
             this.btnHapus = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.dgvKamera = new System.Windows.Forms.DataGridView();
+            this.btnBack = new System.Windows.Forms.Button();
+            this.btnAnalisis = new System.Windows.Forms.Button();
+            this.lblMessages = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvKamera)).BeginInit();
             this.SuspendLayout();
             // 
@@ -147,21 +150,54 @@
             // 
             this.dgvKamera.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvKamera.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dgvKamera.Location = new System.Drawing.Point(32, 288);
+            this.dgvKamera.Location = new System.Drawing.Point(32, 265);
             this.dgvKamera.Name = "dgvKamera";
             this.dgvKamera.RowHeadersWidth = 51;
             this.dgvKamera.RowTemplate.Height = 24;
-            this.dgvKamera.Size = new System.Drawing.Size(730, 150);
+            this.dgvKamera.Size = new System.Drawing.Size(908, 173);
             this.dgvKamera.TabIndex = 13;
             this.dgvKamera.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewKamera_CellClick);
             this.dgvKamera.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewKamera_CellClick);
+            // 
+            // btnBack
+            // 
+            this.btnBack.Location = new System.Drawing.Point(641, 62);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(92, 23);
+            this.btnBack.TabIndex = 14;
+            this.btnBack.Text = "Back";
+            this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btnAnalisis
+            // 
+            this.btnAnalisis.Location = new System.Drawing.Point(641, 126);
+            this.btnAnalisis.Name = "btnAnalisis";
+            this.btnAnalisis.Size = new System.Drawing.Size(92, 23);
+            this.btnAnalisis.TabIndex = 15;
+            this.btnAnalisis.Text = "Analisis";
+            this.btnAnalisis.UseVisualStyleBackColor = true;
+            this.btnAnalisis.Click += new System.EventHandler(this.btnAnalisis_Click);
+            // 
+            // lblMessages
+            // 
+            this.lblMessages.AutoSize = true;
+            this.lblMessages.Location = new System.Drawing.Point(847, 223);
+            this.lblMessages.Name = "lblMessages";
+            this.lblMessages.Size = new System.Drawing.Size(71, 16);
+            this.lblMessages.TabIndex = 16;
+            this.lblMessages.Text = "Messages";
+            this.lblMessages.Click += new System.EventHandler(this.lblMessages_Click);
             // 
             // kamera
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1156, 450);
+            this.Controls.Add(this.lblMessages);
+            this.Controls.Add(this.btnAnalisis);
+            this.Controls.Add(this.btnBack);
             this.Controls.Add(this.dgvKamera);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnHapus);
@@ -197,5 +233,8 @@
         private System.Windows.Forms.Button btnHapus;
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.DataGridView dgvKamera;
+        private System.Windows.Forms.Button btnBack;
+        private System.Windows.Forms.Button btnAnalisis;
+        private System.Windows.Forms.Label lblMessages;
     }
 }

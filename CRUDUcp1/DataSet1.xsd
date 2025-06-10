@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DataSet1" targetNamespace="http://tempuri.org/DataSet1.xsd" xmlns:mstns="http://tempuri.org/DataSet1.xsd" xmlns="http://tempuri.org/DataSet1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="RentalKameraConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="RentalKameraConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.CRUDUcp1.Properties.Settings.GlobalReference.Default.RentalKameraConnectionString" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="DataTable1TableAdapter" GeneratorDataComponentClassName="DataTable1TableAdapter" Name="DataTable1" UserDataComponentName="DataTable1TableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="RentalKameraConnectionString (Settings)" DbObjectType="Unknown" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="true">
+                    <CommandText>SELECT rm.ID_Riwayat, k.Merk_Kamera, k.Model, k.Status, t.Nama_Teknisi, t.No_Telepon, t.Email, rm.Tanggal_Maintenance, rm.Keterangan
+FROM     Riwayat_Maintainence AS rm INNER JOIN
+                  Kamera AS k ON rm.ID_Kamera = k.ID_Kamera INNER JOIN
+                  Teknisi AS t ON rm.ID_Teknisi = t.ID_Teknisi
+ORDER BY rm.Tanggal_Maintenance DESC</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="ID_Riwayat" DataSetColumn="ID_Riwayat" />
+              <Mapping SourceColumn="Merk_Kamera" DataSetColumn="Merk_Kamera" />
+              <Mapping SourceColumn="Model" DataSetColumn="Model" />
+              <Mapping SourceColumn="Status" DataSetColumn="Status" />
+              <Mapping SourceColumn="Nama_Teknisi" DataSetColumn="Nama_Teknisi" />
+              <Mapping SourceColumn="No_Telepon" DataSetColumn="No_Telepon" />
+              <Mapping SourceColumn="Email" DataSetColumn="Email" />
+              <Mapping SourceColumn="Tanggal_Maintenance" DataSetColumn="Tanggal_Maintenance" />
+              <Mapping SourceColumn="Keterangan" DataSetColumn="Keterangan" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DataSet1" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_UserDSName="DataSet1" msprop:Generator_DataSetName="DataSet1">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="DataTable1" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_TablePropName="DataTable1" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_UserTableName="DataTable1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ID_Riwayat" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnPropNameInRow="ID_Riwayat" msprop:Generator_ColumnPropNameInTable="ID_RiwayatColumn" msprop:Generator_ColumnVarNameInTable="columnID_Riwayat" msprop:Generator_UserColumnName="ID_Riwayat" type="xs:int" />
+              <xs:element name="Merk_Kamera" msprop:Generator_ColumnPropNameInRow="Merk_Kamera" msprop:Generator_ColumnPropNameInTable="Merk_KameraColumn" msprop:Generator_ColumnVarNameInTable="columnMerk_Kamera" msprop:Generator_UserColumnName="Merk_Kamera">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Model" msprop:Generator_ColumnPropNameInRow="Model" msprop:Generator_ColumnPropNameInTable="ModelColumn" msprop:Generator_ColumnVarNameInTable="columnModel" msprop:Generator_UserColumnName="Model">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Status" msprop:Generator_ColumnPropNameInRow="Status" msprop:Generator_ColumnPropNameInTable="StatusColumn" msprop:Generator_ColumnVarNameInTable="columnStatus" msprop:Generator_UserColumnName="Status" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="20" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Nama_Teknisi" msprop:Generator_ColumnPropNameInRow="Nama_Teknisi" msprop:Generator_ColumnPropNameInTable="Nama_TeknisiColumn" msprop:Generator_ColumnVarNameInTable="columnNama_Teknisi" msprop:Generator_UserColumnName="Nama_Teknisi">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="No_Telepon" msprop:Generator_ColumnPropNameInRow="No_Telepon" msprop:Generator_ColumnPropNameInTable="No_TeleponColumn" msprop:Generator_ColumnVarNameInTable="columnNo_Telepon" msprop:Generator_UserColumnName="No_Telepon" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="13" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Email" msprop:Generator_ColumnPropNameInRow="Email" msprop:Generator_ColumnPropNameInTable="EmailColumn" msprop:Generator_ColumnVarNameInTable="columnEmail" msprop:Generator_UserColumnName="Email" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tanggal_Maintenance" msprop:Generator_ColumnPropNameInRow="Tanggal_Maintenance" msprop:Generator_ColumnPropNameInTable="Tanggal_MaintenanceColumn" msprop:Generator_ColumnVarNameInTable="columnTanggal_Maintenance" msprop:Generator_UserColumnName="Tanggal_Maintenance" type="xs:dateTime" />
+              <xs:element name="Keterangan" msprop:Generator_ColumnPropNameInRow="Keterangan" msprop:Generator_ColumnPropNameInTable="KeteranganColumn" msprop:Generator_ColumnVarNameInTable="columnKeterangan" msprop:Generator_UserColumnName="Keterangan" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:DataTable1" />
+      <xs:field xpath="mstns:ID_Riwayat" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

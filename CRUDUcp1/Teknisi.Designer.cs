@@ -38,6 +38,10 @@
             this.btnHapus = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.DataGridViewTeknisi = new System.Windows.Forms.DataGridView();
+            this.btnClear = new System.Windows.Forms.Button();
+            this.btnBack = new System.Windows.Forms.Button();
+            this.btnAnalisis = new System.Windows.Forms.Button();
+            this.lblMessages = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewTeknisi)).BeginInit();
             this.SuspendLayout();
             // 
@@ -88,6 +92,7 @@
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(100, 22);
             this.txtEmail.TabIndex = 5;
+            this.txtEmail.TextChanged += new System.EventHandler(this.txtEmail_TextChanged);
             // 
             // btnTambah
             // 
@@ -101,7 +106,7 @@
             // 
             // btnHapus
             // 
-            this.btnHapus.Location = new System.Drawing.Point(570, 101);
+            this.btnHapus.Location = new System.Drawing.Point(570, 87);
             this.btnHapus.Name = "btnHapus";
             this.btnHapus.Size = new System.Drawing.Size(75, 23);
             this.btnHapus.TabIndex = 7;
@@ -111,7 +116,7 @@
             // 
             // btnUpdate
             // 
-            this.btnUpdate.Location = new System.Drawing.Point(570, 163);
+            this.btnUpdate.Location = new System.Drawing.Point(570, 129);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(75, 23);
             this.btnUpdate.TabIndex = 8;
@@ -132,12 +137,55 @@
             this.DataGridViewTeknisi.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewTeknisi_CellClick);
             this.DataGridViewTeknisi.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewTeknisi_CellClick);
             // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(570, 166);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(75, 23);
+            this.btnClear.TabIndex = 10;
+            this.btnClear.Text = "Clear";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // btnBack
+            // 
+            this.btnBack.Location = new System.Drawing.Point(759, 71);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(75, 23);
+            this.btnBack.TabIndex = 11;
+            this.btnBack.Text = "Back";
+            this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
+            // 
+            // btnAnalisis
+            // 
+            this.btnAnalisis.Location = new System.Drawing.Point(917, 352);
+            this.btnAnalisis.Name = "btnAnalisis";
+            this.btnAnalisis.Size = new System.Drawing.Size(75, 23);
+            this.btnAnalisis.TabIndex = 12;
+            this.btnAnalisis.Text = "Analisis";
+            this.btnAnalisis.UseVisualStyleBackColor = true;
+            this.btnAnalisis.Click += new System.EventHandler(this.btnAnalisis_Click);
+            // 
+            // lblMessages
+            // 
+            this.lblMessages.AutoSize = true;
+            this.lblMessages.Location = new System.Drawing.Point(77, 400);
+            this.lblMessages.Name = "lblMessages";
+            this.lblMessages.Size = new System.Drawing.Size(71, 16);
+            this.lblMessages.TabIndex = 13;
+            this.lblMessages.Text = "Messages";
+            // 
             // Teknisi
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1022, 481);
+            this.Controls.Add(this.lblMessages);
+            this.Controls.Add(this.btnAnalisis);
+            this.Controls.Add(this.btnBack);
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.DataGridViewTeknisi);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnHapus);
@@ -150,6 +198,7 @@
             this.Controls.Add(this.label1);
             this.Name = "Teknisi";
             this.Text = "Teknisi";
+            this.Load += new System.EventHandler(this.FormTeknisi_Load);
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewTeknisi)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -168,5 +217,9 @@
         private System.Windows.Forms.Button btnHapus;
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.DataGridView DataGridViewTeknisi;
+        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnBack;
+        private System.Windows.Forms.Button btnAnalisis;
+        private System.Windows.Forms.Label lblMessages;
     }
 }
