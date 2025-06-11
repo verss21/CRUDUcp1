@@ -69,5 +69,10 @@ namespace CRUDUcp1
         {
             this.Close(); // tutup form report dan kembali ke form sebelumnya
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
