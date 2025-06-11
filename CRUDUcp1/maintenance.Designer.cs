@@ -235,7 +235,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Name = "Maintenance";
-            this.Text = "maintenance";
+            this.Text = "Riwayat Maintenance";
             this.Load += new System.EventHandler(this.Maintenance_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMaintenance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

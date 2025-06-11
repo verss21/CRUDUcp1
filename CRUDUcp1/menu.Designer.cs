@@ -98,7 +98,7 @@
             this.Controls.Add(this.btnKamera);
             this.Controls.Add(this.btnTeknisi);
             this.Name = "menu";
-            this.Text = "menu";
+            this.Text = "Menu";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 

@@ -211,7 +211,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "kamera";
-            this.Text = "kamera";
+            this.Text = "Kamera";
             this.Load += new System.EventHandler(this.kamera_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvKamera)).EndInit();
             this.ResumeLayout(false);
