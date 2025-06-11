@@ -28,6 +28,11 @@ namespace CRUDUcp1
             LoadKamera();    // Muat data kamera
             LoadTeknisi();   // Muat data teknisi
             LoadData();      // Muat data awal dengan caching dan timing
+            cmbKeterangan.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbKeterangan.Items.Clear();
+            cmbKeterangan.Items.AddRange(new object[] { "Sedang Dikerjakan", "Selesai", "Pending" });
+            cmbKeterangan.SelectedIndex = -1;  
+
         }
 
         private void LoadKamera()
@@ -252,14 +257,14 @@ namespace CRUDUcp1
             // atau jika ada data yang dipilih, set ulang berdasarkan data yang dipilih.
             cmbKamera.SelectedIndex = 0;
             cmbTeknisi.SelectedIndex = 0;
-            txtKeterangan.Text = string.Empty; // Kosongkan keterangan setelah operasi CRUD
+            cmbKeterangan.SelectedIndex = -1; // reset pilihan keterangan
             dtpMaintenance.Value = DateTime.Now; // Atur tanggal kembali ke tanggal saat ini atau tanggal default yang diinginkan
         }
 
         private void btnTambah_Click(object sender, EventArgs e)
         {
             // Periksa jika "Pilih Kamera" atau "Pilih Teknisi" yang terpilih
-            if (cmbKamera.SelectedValue == DBNull.Value || cmbTeknisi.SelectedValue == DBNull.Value || string.IsNullOrWhiteSpace(txtKeterangan.Text))
+            if (cmbKamera.SelectedValue == null || cmbTeknisi.SelectedValue == null || cmbKeterangan.SelectedIndex == -1)
             {
                 MessageBox.Show("Semua kolom (Kamera, Teknisi, Keterangan) harus diisi dengan pilihan yang valid.", "Input Tidak Lengkap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -292,7 +297,7 @@ namespace CRUDUcp1
                         cmd.Parameters.AddWithValue("@ID_Kamera", cmbKamera.SelectedValue);
                         cmd.Parameters.AddWithValue("@ID_Teknisi", cmbTeknisi.SelectedValue);
                         cmd.Parameters.AddWithValue("@Tanggal_Maintenance", tanggal);
-                        cmd.Parameters.AddWithValue("@Keterangan", txtKeterangan.Text);
+                        cmd.Parameters.AddWithValue("@Keterangan", cmbKeterangan.SelectedItem?.ToString());
 
                         cmd.ExecuteNonQuery();
                     }
@@ -317,7 +322,7 @@ namespace CRUDUcp1
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             // Periksa jika "Pilih Kamera" atau "Pilih Teknisi" yang terpilih
-            if (cmbKamera.SelectedValue == DBNull.Value || cmbTeknisi.SelectedValue == DBNull.Value || string.IsNullOrWhiteSpace(txtKeterangan.Text))
+            if (cmbKamera.SelectedValue == DBNull.Value || cmbTeknisi.SelectedValue == DBNull.Value || cmbKeterangan.SelectedIndex == -1)
             {
                 MessageBox.Show("Semua kolom (Kamera, Teknisi, Keterangan) harus diisi dengan pilihan yang valid.", "Input Tidak Lengkap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -351,7 +356,7 @@ namespace CRUDUcp1
                         cmd.Parameters.AddWithValue("@ID_Kamera", cmbKamera.SelectedValue);
                         cmd.Parameters.AddWithValue("@ID_Teknisi", cmbTeknisi.SelectedValue);
                         cmd.Parameters.AddWithValue("@Tanggal_Maintenance", tanggal);
-                        cmd.Parameters.AddWithValue("@Keterangan", txtKeterangan.Text);
+                        cmd.Parameters.AddWithValue("@Keterangan", cmbKeterangan.SelectedItem?.ToString());
 
                         // Gunakan SqlParameter untuk ReturnValue
                         SqlParameter returnValue = cmd.Parameters.Add("@RowCount", SqlDbType.Int); // Nama parameter yang lebih deskriptif
@@ -530,7 +535,13 @@ namespace CRUDUcp1
                 // Mengambil nilai Keterangan dari sel DataGridView.
                 // Menggunakan null-conditional operator (?) dan null-coalescing operator (??)
                 // untuk menangani kemungkinan nilai DBNull atau null.
-                txtKeterangan.Text = row.Cells["Keterangan"].Value?.ToString() ?? string.Empty;
+                string keterangan = row.Cells["Keterangan"].Value?.ToString() ?? string.Empty;
+                int indexKeterangan = cmbKeterangan.FindStringExact(keterangan);
+                if (indexKeterangan != -1)
+                    cmbKeterangan.SelectedIndex = indexKeterangan;
+                else
+                    cmbKeterangan.SelectedIndex = -1; // default kosong kalau tidak ditemukan
+
             }
         }
 
@@ -601,5 +612,10 @@ namespace CRUDUcp1
         // Event handler yang tidak digunakan, dapat dihapus jika tidak ada fungsionalitas
         private void label1_Click(object sender, EventArgs e) { }
         private void txtIDKamera_TextChanged(object sender, EventArgs e) { }
+
+        private void dtpMaintenance_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

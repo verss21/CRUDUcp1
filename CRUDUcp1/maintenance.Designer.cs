@@ -30,7 +30,6 @@
         {
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.txtKeterangan = new System.Windows.Forms.TextBox();
             this.btnTambah = new System.Windows.Forms.Button();
             this.btnHapus = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
@@ -45,6 +44,7 @@
             this.btnAnalisis = new System.Windows.Forms.Button();
             this.lblMessages = new System.Windows.Forms.Label();
             this.btnLaporan = new System.Windows.Forms.Button();
+            this.cmbKeterangan = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMaintenance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -52,7 +52,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(63, 123);
+            this.label2.Location = new System.Drawing.Point(63, 112);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(138, 16);
             this.label2.TabIndex = 1;
@@ -61,18 +61,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(63, 156);
+            this.label3.Location = new System.Drawing.Point(63, 148);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(76, 16);
             this.label3.TabIndex = 2;
             this.label3.Text = "Keterangan";
-            // 
-            // txtKeterangan
-            // 
-            this.txtKeterangan.Location = new System.Drawing.Point(278, 156);
-            this.txtKeterangan.Name = "txtKeterangan";
-            this.txtKeterangan.Size = new System.Drawing.Size(100, 22);
-            this.txtKeterangan.TabIndex = 4;
             // 
             // btnTambah
             // 
@@ -117,10 +110,11 @@
             // 
             // dtpMaintenance
             // 
-            this.dtpMaintenance.Location = new System.Drawing.Point(278, 123);
+            this.dtpMaintenance.Location = new System.Drawing.Point(278, 107);
             this.dtpMaintenance.Name = "dtpMaintenance";
             this.dtpMaintenance.Size = new System.Drawing.Size(200, 22);
             this.dtpMaintenance.TabIndex = 10;
+            this.dtpMaintenance.ValueChanged += new System.EventHandler(this.dtpMaintenance_ValueChanged);
             // 
             // label1
             // 
@@ -155,7 +149,7 @@
             this.cmbKamera.FormattingEnabled = true;
             this.cmbKamera.Location = new System.Drawing.Point(278, 41);
             this.cmbKamera.Name = "cmbKamera";
-            this.cmbKamera.Size = new System.Drawing.Size(121, 24);
+            this.cmbKamera.Size = new System.Drawing.Size(200, 24);
             this.cmbKamera.TabIndex = 16;
             // 
             // cmbTeknisi
@@ -163,7 +157,7 @@
             this.cmbTeknisi.FormattingEnabled = true;
             this.cmbTeknisi.Location = new System.Drawing.Point(278, 77);
             this.cmbTeknisi.Name = "cmbTeknisi";
-            this.cmbTeknisi.Size = new System.Drawing.Size(121, 24);
+            this.cmbTeknisi.Size = new System.Drawing.Size(200, 24);
             this.cmbTeknisi.TabIndex = 17;
             // 
             // btnBack
@@ -205,12 +199,25 @@
             this.btnLaporan.UseVisualStyleBackColor = true;
             this.btnLaporan.Click += new System.EventHandler(this.btnLaporan_Click);
             // 
+            // cmbKeterangan
+            // 
+            this.cmbKeterangan.FormattingEnabled = true;
+            this.cmbKeterangan.Items.AddRange(new object[] {
+            "Sedang Dikerjakan",
+            "Pending",
+            "Selesai"});
+            this.cmbKeterangan.Location = new System.Drawing.Point(278, 140);
+            this.cmbKeterangan.Name = "cmbKeterangan";
+            this.cmbKeterangan.Size = new System.Drawing.Size(200, 24);
+            this.cmbKeterangan.TabIndex = 22;
+            // 
             // Maintenance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1266, 450);
+            this.Controls.Add(this.cmbKeterangan);
             this.Controls.Add(this.btnLaporan);
             this.Controls.Add(this.lblMessages);
             this.Controls.Add(this.btnAnalisis);
@@ -225,7 +232,6 @@
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnHapus);
             this.Controls.Add(this.btnTambah);
-            this.Controls.Add(this.txtKeterangan);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Name = "Maintenance";
@@ -240,7 +246,6 @@
         #endregion
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox txtKeterangan;
         private System.Windows.Forms.Button btnTambah;
         private System.Windows.Forms.Button btnHapus;
         private System.Windows.Forms.Button btnUpdate;
@@ -255,5 +260,6 @@
         private System.Windows.Forms.Button btnAnalisis;
         private System.Windows.Forms.Label lblMessages;
         private System.Windows.Forms.Button btnLaporan;
+        private System.Windows.Forms.ComboBox cmbKeterangan;
     }
 }
