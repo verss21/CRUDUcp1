@@ -13,7 +13,8 @@ namespace CRUDUcp1
 {
     public partial class Login : Form
     {
-        static string connectionString = "Data Source=LAPTOP-DBS9EP5T\\RAEHANARJUN;Initial Catalog=RentalKamera;Integrated Security=True";
+       koneksi kn = new koneksi();
+        string strKonek = "";
         public Login()
         {
             InitializeComponent();
@@ -38,7 +39,7 @@ namespace CRUDUcp1
                 MessageBox.Show("Username atau password salah.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-    
+
         private void label1_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text;
@@ -61,7 +62,26 @@ namespace CRUDUcp1
     
         private void Form1_Load(object sender, EventArgs e)
         {
+            TesKoneksiDatabase(); // Panggil fungsi untuk tes koneksi saat form dimuat
+        }
 
+
+        private void TesKoneksiDatabase()
+        {
+            using (SqlConnection conn = new SqlConnection(kn.connectionString()))
+            {
+                try
+                {
+                    conn.Open();
+                    lblStatusKoneksi.Text = "🟢 Koneksi berhasil";
+                    lblStatusKoneksi.ForeColor = Color.Green;
+                }
+                catch (Exception)
+                {
+                    lblStatusKoneksi.Text = "🔴 Koneksi gagal";
+                    lblStatusKoneksi.ForeColor = Color.Red;
+                }
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -74,14 +94,15 @@ namespace CRUDUcp1
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
 
+            // ✅ Validasi input
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 MessageBox.Show("Username dan Password harus diisi!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Verifikasi login dengan database
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            // 🔐 Verifikasi login ke database
+            using (SqlConnection conn = new SqlConnection(kn.connectionString()))
             {
                 string query = "SELECT COUNT(1) FROM Admin WHERE Username = @Username AND Password = @Password";
 
@@ -98,8 +119,6 @@ namespace CRUDUcp1
                         if (count == 1)
                         {
                             MessageBox.Show("Login berhasil!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            // Navigasi ke form utama (menu)
                             menu formMenu = new menu();
                             formMenu.Show();
                             this.Hide();
@@ -108,6 +127,16 @@ namespace CRUDUcp1
                         {
                             MessageBox.Show("Username atau password salah.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
+                    }
+                    catch (SqlException sqlEx)
+                    {
+                        // Tambahan pengecekan khusus jika koneksi database gagal karena jaringan
+                        MessageBox.Show(
+                            "Koneksi ke database gagal. Silakan periksa jaringan lokal atau status SQL Server.\n\n" + sqlEx.Message,
+                            "Koneksi Gagal",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
                     }
                     catch (Exception ex)
                     {

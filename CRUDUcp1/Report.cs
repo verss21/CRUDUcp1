@@ -2,12 +2,15 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Windows.Forms;
 
 namespace CRUDUcp1
 {
     public partial class Report : Form
     {
+        koneksi kn = new koneksi();
+        string connect = "";
         public Report()
         {
             InitializeComponent();
@@ -20,7 +23,7 @@ namespace CRUDUcp1
 
         private void SetupReportViewer()
         {
-            string connectionString = "Data Source=LAPTOP-DBS9EP5T\\RAEHANARJUN;Initial Catalog=RentalKamera;Integrated Security=True";
+            connect = kn.connectionString(); // ambil string koneksi dari kelas koneksi
 
             string query = @"
                 SELECT 
@@ -44,7 +47,7 @@ namespace CRUDUcp1
 
             DataTable dt = new DataTable();
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(kn.connectionString()))
             {
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 da.Fill(dt);
@@ -55,7 +58,8 @@ namespace CRUDUcp1
             reportViewer1.LocalReport.DataSources.Clear();
             reportViewer1.LocalReport.DataSources.Add(rds);
 
-            reportViewer1.LocalReport.ReportPath = "D:\\Pengembangan Aplikasi Basis Data\\CRUDUcp1\\CRUDUcp1\\RiwayatMaintenanceReport.rdlc"; // file harus ada di root proyek atau sesuaikan path
+            string reportPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RiwayatMaintenanceReport.rdlc");
+            reportViewer1.LocalReport.ReportPath = reportPath;
 
             reportViewer1.RefreshReport();
         }

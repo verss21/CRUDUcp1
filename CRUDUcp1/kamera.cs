@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.Caching;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace CRUDUcp1
 {
     public partial class kamera : Form
     {
-        private string connectionString = "Data Source=LAPTOP-DBS9EP5T\\RAEHANARJUN;Initial Catalog=RentalKamera;Integrated Security=True";
+        koneksi kn = new koneksi();
+        string strKonek = "";
 
         private readonly MemoryCache _cache = MemoryCache.Default;
         private readonly CacheItemPolicy _policy = new CacheItemPolicy
@@ -33,6 +35,7 @@ namespace CRUDUcp1
         {
             EnsureIndexes();
             LoadData();
+            LoadKamera();
         }
 
         private void EnsureIndexes()
@@ -53,7 +56,7 @@ namespace CRUDUcp1
                     CREATE NONCLUSTERED INDEX IX_Kamera_Lokasi ON Kamera(Lokasi);
             END";
 
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new SqlConnection(kn.connectionString()))
             using (var cmd = new SqlCommand(indexScript, conn))
             {
                 try
@@ -82,7 +85,7 @@ namespace CRUDUcp1
                 var stopwatch = Stopwatch.StartNew();
 
                 dt = new DataTable();
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SqlConnection(kn.connectionString()))
                 {
                     conn.Open();
                     using (var cmd = new SqlCommand("SELECT ID_Kamera, Merk_Kamera, Model, Status, Lokasi FROM Kamera", conn))
@@ -101,9 +104,21 @@ namespace CRUDUcp1
             dgvKamera.DataSource = dt;
         }
 
+        private void LoadKamera()
+        {
+            using (SqlConnection conn = new SqlConnection(kn.connectionString()))
+            {
+                string query = "SELECT ID_Kamera, Merk_Kamera, Model, Status, Lokasi FROM Kamera";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+                dgvKamera.DataSource = dt;
+            }
+        }
+
         private void AnalyzeQuery(string sqlQuery)
         {
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new SqlConnection(kn.connectionString()))
             {
                 conn.InfoMessage += (s, e) => MessageBox.Show(e.Message, "STATISTICS INFO");
                 conn.Open();
@@ -125,6 +140,37 @@ namespace CRUDUcp1
 
         private void btnTambah_Click(object sender, EventArgs e)
         {
+            // Validasi input tidak boleh kosong
+            if (string.IsNullOrWhiteSpace(txtMerkKamera.Text) ||
+                string.IsNullOrWhiteSpace(txtModel.Text) ||
+                string.IsNullOrWhiteSpace(cmbStatus.Text) ||
+                string.IsNullOrWhiteSpace(txtLokasi.Text))
+            {
+                MessageBox.Show("Semua kolom wajib diisi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Validasi Merk dan Model hanya boleh huruf, angka, dan spasi
+            if (!System.Text.RegularExpressions.Regex.IsMatch(txtMerkKamera.Text, @"^[a-zA-Z0-9\s]+$"))
+            {
+                MessageBox.Show("Merk kamera hanya boleh berisi huruf, angka, dan spasi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(txtModel.Text, @"^[a-zA-Z0-9\s]+$"))
+            {
+                MessageBox.Show("Model kamera hanya boleh berisi huruf, angka, dan spasi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Validasi Lokasi: tidak boleh mengandung karakter spesial atau simbol @
+            if (!System.Text.RegularExpressions.Regex.IsMatch(txtLokasi.Text, @"^[a-zA-Z0-9\s]+$"))
+            {
+                MessageBox.Show("Lokasi tidak boleh mengandung karakter spesial atau simbol '@'. Hanya huruf, angka, dan spasi yang diperbolehkan.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Konfirmasi sebelum tambah
             DialogResult result = MessageBox.Show(
                 "Anda yakin ingin menambahkan data ini?",
                 "Konfirmasi",
@@ -134,7 +180,7 @@ namespace CRUDUcp1
 
             if (result == DialogResult.Yes)
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = new SqlConnection(kn.connectionString()))
                 {
                     connection.Open();
                     SqlTransaction transaction = connection.BeginTransaction();
@@ -145,10 +191,10 @@ namespace CRUDUcp1
                         {
                             command.CommandType = CommandType.StoredProcedure;
 
-                            command.Parameters.AddWithValue("@Merk_Kamera", txtMerkKamera.Text);
-                            command.Parameters.AddWithValue("@Model", txtModel.Text);
-                            command.Parameters.AddWithValue("@Status", cmbStatus.Text);
-                            command.Parameters.AddWithValue("@Lokasi", txtLokasi.Text);
+                            command.Parameters.AddWithValue("@Merk_Kamera", txtMerkKamera.Text.Trim());
+                            command.Parameters.AddWithValue("@Model", txtModel.Text.Trim());
+                            command.Parameters.AddWithValue("@Status", cmbStatus.Text.Trim());
+                            command.Parameters.AddWithValue("@Lokasi", txtLokasi.Text.Trim());
 
                             command.ExecuteNonQuery();
                         }
@@ -172,115 +218,168 @@ namespace CRUDUcp1
         }
 
 
+
+
         private void btnUpdate_Click_1(object sender, EventArgs e)
         {
-            if (dgvKamera.CurrentRow != null)
+            // 🔒 Validasi: baris harus benar-benar dipilih
+            if (dgvKamera.SelectedRows.Count == 0 || dgvKamera.CurrentRow == null)
             {
-                DialogResult result = MessageBox.Show(
-                    "Apakah Anda yakin ingin mengupdate data ini?",
-                    "Konfirmasi",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                );
-
-                if (result == DialogResult.Yes)
-                {
-                    int id = Convert.ToInt32(dgvKamera.CurrentRow.Cells["ID_Kamera"].Value);
-
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        connection.Open();
-                        SqlTransaction transaction = connection.BeginTransaction();
-
-                        try
-                        {
-                            using (SqlCommand command = new SqlCommand("sp_UpdateKamera", connection, transaction))
-                            {
-                                command.CommandType = CommandType.StoredProcedure;
-
-                                command.Parameters.AddWithValue("@ID_Kamera", id);
-                                command.Parameters.AddWithValue("@Merk_Kamera", txtMerkKamera.Text);
-                                command.Parameters.AddWithValue("@Model", txtModel.Text);
-                                command.Parameters.AddWithValue("@Status", cmbStatus.Text);
-                                command.Parameters.AddWithValue("@Lokasi", txtLokasi.Text);
-
-                                command.ExecuteNonQuery();
-                            }
-
-                            transaction.Commit();
-                            MessageBox.Show("Data kamera berhasil diperbarui.");
-                            RefreshDataGrid();
-                            ClearFields();
-                        }
-                        catch (Exception ex)
-                        {
-                            transaction.Rollback();
-                            MessageBox.Show("Gagal memperbarui data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        finally
-                        {
-                            connection.Close();
-                        }
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Update dibatalkan.", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                MessageBox.Show("Silakan pilih baris kamera yang ingin diperbarui terlebih dahulu.", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            else
+
+            // 🔒 Validasi input tidak boleh kosong
+            if (string.IsNullOrWhiteSpace(txtMerkKamera.Text) ||
+                string.IsNullOrWhiteSpace(txtModel.Text) ||
+                string.IsNullOrWhiteSpace(cmbStatus.Text) ||
+                string.IsNullOrWhiteSpace(txtLokasi.Text))
             {
-                MessageBox.Show("Silakan pilih baris yang ingin diperbarui terlebih dahulu.");
+                MessageBox.Show("Semua kolom harus diisi sebelum melakukan update.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 🔒 Validasi input: hanya huruf, angka, dan spasi
+            if (!Regex.IsMatch(txtMerkKamera.Text, @"^[a-zA-Z0-9\s]+$"))
+            {
+                MessageBox.Show("Merk kamera hanya boleh berisi huruf, angka, dan spasi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!Regex.IsMatch(txtModel.Text, @"^[a-zA-Z0-9\s]+$"))
+            {
+                MessageBox.Show("Model kamera hanya boleh berisi huruf, angka, dan spasi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!Regex.IsMatch(txtLokasi.Text, @"^[a-zA-Z0-9\s]+$"))
+            {
+                MessageBox.Show("Lokasi tidak boleh mengandung karakter spesial atau simbol '@'.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // ✅ Ambil nilai lama dari DataGridView
+            string oldMerk = dgvKamera.CurrentRow.Cells["Merk_Kamera"].Value?.ToString().Trim() ?? "";
+            string oldModel = dgvKamera.CurrentRow.Cells["Model"].Value?.ToString().Trim() ?? "";
+            string oldStatus = dgvKamera.CurrentRow.Cells["Status"].Value?.ToString().Trim() ?? "";
+            string oldLokasi = dgvKamera.CurrentRow.Cells["Lokasi"].Value?.ToString().Trim() ?? "";
+
+            // 🔁 Cek apakah ada perubahan
+            if (txtMerkKamera.Text.Trim() == oldMerk &&
+                txtModel.Text.Trim() == oldModel &&
+                cmbStatus.Text.Trim() == oldStatus &&
+                txtLokasi.Text.Trim() == oldLokasi)
+            {
+                MessageBox.Show("Data harus diubah terlebih dahulu sebelum diperbarui.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 🔒 Konfirmasi update
+            DialogResult result = MessageBox.Show(
+                "Apakah Anda yakin ingin mengupdate data ini?",
+                "Konfirmasi",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result != DialogResult.Yes) return;
+
+            int id = Convert.ToInt32(dgvKamera.CurrentRow.Cells["ID_Kamera"].Value);
+
+            using (SqlConnection connection = new SqlConnection(kn.connectionString()))
+            {
+                connection.Open();
+                SqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    using (SqlCommand command = new SqlCommand("sp_UpdateKamera", connection, transaction))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@ID_Kamera", id);
+                        command.Parameters.AddWithValue("@Merk_Kamera", txtMerkKamera.Text.Trim());
+                        command.Parameters.AddWithValue("@Model", txtModel.Text.Trim());
+                        command.Parameters.AddWithValue("@Status", cmbStatus.Text.Trim());
+                        command.Parameters.AddWithValue("@Lokasi", txtLokasi.Text.Trim());
+
+                        command.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    MessageBox.Show("Data kamera berhasil diperbarui.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    RefreshDataGrid();
+                    ClearFields();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show("Gagal memperbarui data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    connection.Close();
+                }
             }
         }
 
         private void btnHapus_Click(object sender, EventArgs e)
         {
-            if (dgvKamera.CurrentRow != null)
+            // Validasi: Pastikan baris dipilih
+            if (dgvKamera.SelectedRows.Count == 0 || dgvKamera.CurrentRow == null)
             {
-                int id = Convert.ToInt32(dgvKamera.CurrentRow.Cells["ID_Kamera"].Value);
+                MessageBox.Show("Silakan pilih data kamera yang ingin dihapus dari tabel.", "Tidak Ada Data Terpilih", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-                var confirm = MessageBox.Show("Yakin ingin menghapus data kamera ini?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var selectedRow = dgvKamera.CurrentRow;
 
-                if (confirm == DialogResult.Yes)
+            // Validasi: pastikan kolom ID_Kamera tidak null/kosong
+            if (selectedRow.Cells["ID_Kamera"].Value == null ||
+                string.IsNullOrWhiteSpace(selectedRow.Cells["ID_Kamera"].Value.ToString()))
+            {
+                MessageBox.Show("Data kamera tidak lengkap atau ID kosong. Tidak dapat menghapus.", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int id = Convert.ToInt32(selectedRow.Cells["ID_Kamera"].Value);
+
+            var confirm = MessageBox.Show("Yakin ingin menghapus data kamera ini?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (confirm == DialogResult.Yes)
+            {
+                using (SqlConnection connection = new SqlConnection(kn.connectionString()))
                 {
-                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction();
+
+                    try
                     {
-                        connection.Open();
-                        SqlTransaction transaction = connection.BeginTransaction();
-
-                        try
+                        using (SqlCommand command = new SqlCommand("sp_DeleteKamera", connection, transaction))
                         {
-                            using (SqlCommand command = new SqlCommand("sp_DeleteKamera", connection, transaction))
-                            {
-                                command.CommandType = CommandType.StoredProcedure;
-                                command.Parameters.AddWithValue("@ID_Kamera", id);
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@ID_Kamera", id);
 
-                                command.ExecuteNonQuery();
-                            }
+                            command.ExecuteNonQuery();
+                        }
 
-                            transaction.Commit();
-                            MessageBox.Show("Data kamera berhasil dihapus.");
-                            RefreshDataGrid();
-                            ClearFields();
-                        }
-                        catch (Exception ex)
-                        {
-                            transaction.Rollback();
-                            MessageBox.Show("Gagal menghapus data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        finally
-                        {
-                            connection.Close();
-                        }
+                        transaction.Commit();
+                        MessageBox.Show("Data kamera berhasil dihapus.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        RefreshDataGrid();
+                        ClearFields();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("Gagal menghapus data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        connection.Close();
                     }
                 }
             }
-            else
-            {
-                MessageBox.Show("Silakan pilih baris yang ingin dihapus terlebih dahulu.");
-            }
         }
+
 
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -298,7 +397,7 @@ namespace CRUDUcp1
 
         private void RefreshDataGrid()
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(kn.connectionString()))
             {
                 string query = "SELECT * FROM Kamera";
                 SqlDataAdapter adapter = new SqlDataAdapter(query, connection);

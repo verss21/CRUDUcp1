@@ -99,6 +99,7 @@
             this.Controls.Add(this.btnTeknisi);
             this.Name = "menu";
             this.Text = "Menu";
+            this.Load += new System.EventHandler(this.menu_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 

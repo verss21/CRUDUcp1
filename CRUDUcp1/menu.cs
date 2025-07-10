@@ -58,5 +58,10 @@ namespace CRUDUcp1
             }
             // Jika pilih "No", tidak melakukan apa-apa
         }
+
+        private void menu_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

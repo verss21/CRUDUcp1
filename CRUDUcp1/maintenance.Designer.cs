@@ -45,6 +45,7 @@
             this.lblMessages = new System.Windows.Forms.Label();
             this.btnLaporan = new System.Windows.Forms.Button();
             this.cmbKeterangan = new System.Windows.Forms.ComboBox();
+            this.btnRefresh = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMaintenance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -183,7 +184,7 @@
             // lblMessages
             // 
             this.lblMessages.AutoSize = true;
-            this.lblMessages.Location = new System.Drawing.Point(912, 159);
+            this.lblMessages.Location = new System.Drawing.Point(912, 199);
             this.lblMessages.Name = "lblMessages";
             this.lblMessages.Size = new System.Drawing.Size(71, 16);
             this.lblMessages.TabIndex = 20;
@@ -211,12 +212,23 @@
             this.cmbKeterangan.Size = new System.Drawing.Size(200, 24);
             this.cmbKeterangan.TabIndex = 22;
             // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(908, 145);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 23;
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
             // Maintenance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1266, 450);
+            this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.cmbKeterangan);
             this.Controls.Add(this.btnLaporan);
             this.Controls.Add(this.lblMessages);
@@ -262,5 +274,6 @@
         private System.Windows.Forms.Label lblMessages;
         private System.Windows.Forms.Button btnLaporan;
         private System.Windows.Forms.ComboBox cmbKeterangan;
+        private System.Windows.Forms.Button btnRefresh;
     }
 }

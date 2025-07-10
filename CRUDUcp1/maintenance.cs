@@ -9,7 +9,8 @@ namespace CRUDUcp1
 {
     public partial class Maintenance : Form
     {
-        private string connectionString = "Data Source=LAPTOP-DBS9EP5T\\RAEHANARJUN;Initial Catalog=RentalKamera;Integrated Security=True";
+        koneksi kn = new koneksi();
+        string strKonek = "";
 
         private readonly MemoryCache _cache = MemoryCache.Default;
         private readonly CacheItemPolicy _policy = new CacheItemPolicy
@@ -23,6 +24,10 @@ namespace CRUDUcp1
             InitializeComponent();
             dgvMaintenance.CellClick += dgvMaintenance_CellClick;
 
+            dtpMaintenance.MinDate = DateTime.Today;
+
+            // Mengatur tanggal maksimum ke 31 Desember 2025
+            dtpMaintenance.MaxDate = new DateTime(2025, 12, 31);
             // Initial loads on form creation
             EnsureIndexes(); // Pastikan indeks dibuat
             LoadKamera();    // Muat data kamera
@@ -39,7 +44,7 @@ namespace CRUDUcp1
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(kn.connectionString()))
                 {
                     conn.Open();
                     string query = "SELECT ID_Kamera, Merk_Kamera + ' ' + Model AS NamaKamera FROM Kamera";
@@ -70,7 +75,7 @@ namespace CRUDUcp1
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(kn.connectionString()))
                 {
                     conn.Open(); // Pastikan koneksi dibuka sebelum digunakan.
                     string query = "SELECT ID_Teknisi, Nama_Teknisi FROM Teknisi";
@@ -111,7 +116,7 @@ namespace CRUDUcp1
                 dt = new DataTable();
                 try
                 {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlConnection conn = new SqlConnection(kn.connectionString()))
                     {
                         conn.Open();
                         // Lebih baik melakukan JOIN untuk menampilkan nama kamera dan teknisi langsung
@@ -158,7 +163,7 @@ namespace CRUDUcp1
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(kn.connectionString()))
                 {
                     conn.Open();
                     // Gunakan query dengan JOIN untuk tampilan yang lebih informatif
@@ -231,7 +236,7 @@ namespace CRUDUcp1
                 ON Riwayat_Maintainence (Tanggal_Maintenance);
             END";
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(kn.connectionString()))
             using (SqlCommand cmd = new SqlCommand(script, conn))
             {
                 try
@@ -263,18 +268,33 @@ namespace CRUDUcp1
 
         private void btnTambah_Click(object sender, EventArgs e)
         {
-            // Periksa jika "Pilih Kamera" atau "Pilih Teknisi" yang terpilih
-            if (cmbKamera.SelectedValue == null || cmbTeknisi.SelectedValue == null || cmbKeterangan.SelectedIndex == -1)
+            // Validasi ComboBox Kamera
+            if (cmbKamera.SelectedIndex <= 0 || cmbKamera.SelectedValue == null || cmbKamera.SelectedValue is DBNull)
             {
-                MessageBox.Show("Semua kolom (Kamera, Teknisi, Keterangan) harus diisi dengan pilihan yang valid.", "Input Tidak Lengkap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Silakan pilih kamera yang valid.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Validasi ComboBox Teknisi
+            if (cmbTeknisi.SelectedIndex <= 0 || cmbTeknisi.SelectedValue == null || cmbTeknisi.SelectedValue is DBNull)
+            {
+                MessageBox.Show("Silakan pilih teknisi yang valid.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Validasi ComboBox Keterangan
+            if (cmbKeterangan.SelectedIndex == -1 || string.IsNullOrWhiteSpace(cmbKeterangan.Text))
+            {
+                MessageBox.Show("Silakan pilih atau isi keterangan dengan benar.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             DateTime tanggal = dtpMaintenance.Value;
 
+            // Konfirmasi sebelum insert
             DialogResult result = MessageBox.Show(
                 "Apakah Anda ingin menambahkan data ini?",
-                "Konfirmasi Penambahan", // Ubah judul konfirmasi
+                "Konfirmasi Penambahan",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
@@ -283,7 +303,8 @@ namespace CRUDUcp1
                 return;
             }
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            // Eksekusi simpan data
+            using (SqlConnection conn = new SqlConnection(kn.connectionString()))
             {
                 conn.Open();
                 SqlTransaction transaction = conn.BeginTransaction();
@@ -304,12 +325,12 @@ namespace CRUDUcp1
 
                     transaction.Commit();
                     MessageBox.Show("Data berhasil ditambahkan!");
-                    RefreshDataGrid(); // Panggil LoadData() lagi (dengan cache invalidation)
+                    RefreshDataGrid();
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Terjadi kesalahan saat menambahkan data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); // Tambahkan ikon error
+                    MessageBox.Show("Terjadi kesalahan saat menambahkan data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
                 {
@@ -317,60 +338,129 @@ namespace CRUDUcp1
                 }
             }
         }
-
-
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            // Periksa jika "Pilih Kamera" atau "Pilih Teknisi" yang terpilih
-            if (cmbKamera.SelectedValue == DBNull.Value || cmbTeknisi.SelectedValue == DBNull.Value || cmbKeterangan.SelectedIndex == -1)
+            // 🔒 Validasi: baris di DataGridView harus dipilih
+            if (dgvMaintenance.SelectedRows.Count == 0 || dgvMaintenance.CurrentRow == null)
             {
-                MessageBox.Show("Semua kolom (Kamera, Teknisi, Keterangan) harus diisi dengan pilihan yang valid.", "Input Tidak Lengkap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Silakan pilih data yang ingin diupdate terlebih dahulu dari tabel.", "Tidak Ada Data Terpilih", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (dgvMaintenance.CurrentRow != null &&
-                dgvMaintenance.CurrentRow.Cells["ID_Riwayat"].Value != null &&
+            // 🔒 Validasi input combo box harus dipilih dan valid
+            if (cmbKamera.SelectedIndex == -1 ||
+                cmbTeknisi.SelectedIndex == -1 ||
+                cmbKeterangan.SelectedIndex == -1 ||
+                cmbKamera.SelectedValue == null ||
+                cmbTeknisi.SelectedValue == null ||
+                cmbKamera.SelectedValue == DBNull.Value ||
+                cmbTeknisi.SelectedValue == DBNull.Value)
+            {
+                MessageBox.Show(
+                    "Semua kolom (Kamera, Teknisi, Keterangan) harus diisi dengan pilihan yang valid.",
+                    "Input Tidak Lengkap",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
+            // 🔒 Validasi keterangan tidak boleh kosong meski dipilih
+            string keteranganBaru = cmbKeterangan.SelectedItem?.ToString().Trim();
+            if (string.IsNullOrWhiteSpace(keteranganBaru))
+            {
+                MessageBox.Show("Keterangan tidak boleh kosong.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 🔒 Validasi ID_Riwayat dari baris yang dipilih
+            if (dgvMaintenance.CurrentRow.Cells["ID_Riwayat"].Value != null &&
                 int.TryParse(dgvMaintenance.CurrentRow.Cells["ID_Riwayat"].Value.ToString(), out int idRiwayat))
             {
-                DateTime tanggal = dtpMaintenance.Value;
+                // ✅ Ambil data baru dari input
+                DateTime tanggalBaru = dtpMaintenance.Value;
 
+                if (!int.TryParse(cmbKamera.SelectedValue.ToString(), out int idKameraBaru) ||
+                    !int.TryParse(cmbTeknisi.SelectedValue.ToString(), out int idTeknisiBaru))
+                {
+                    MessageBox.Show("ID Kamera atau Teknisi tidak valid.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Ambil data lama dari DataGridView (cek DBNull)
+                object valKameraLama = dgvMaintenance.CurrentRow.Cells["ID_Kamera"].Value;
+                object valTeknisiLama = dgvMaintenance.CurrentRow.Cells["ID_Teknisi"].Value;
+                object valTanggalLama = dgvMaintenance.CurrentRow.Cells["Tanggal_Maintenance"].Value;
+                object valKeteranganLama = dgvMaintenance.CurrentRow.Cells["Keterangan"].Value;
+
+                if (valKameraLama == DBNull.Value || valTeknisiLama == DBNull.Value ||
+                    valTanggalLama == DBNull.Value || valKeteranganLama == DBNull.Value)
+                {
+                    MessageBox.Show("Data lama tidak valid, silakan pilih baris lain.", "Data Tidak Valid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int idKameraLama = Convert.ToInt32(valKameraLama);
+                int idTeknisiLama = Convert.ToInt32(valTeknisiLama);
+                DateTime tanggalLama = Convert.ToDateTime(valTanggalLama);
+                string keteranganLama = valKeteranganLama.ToString().Trim();
+
+                // 🔁 Cek apakah data tidak berubah
+                if (idKameraBaru == idKameraLama &&
+                    idTeknisiBaru == idTeknisiLama &&
+                    tanggalBaru.Date == tanggalLama.Date &&
+                    keteranganBaru == keteranganLama)
+                {
+                    MessageBox.Show(
+                        "Data harus diubah terlebih dahulu sebelum diperbarui.",
+                        "Validasi",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
+                    return;
+                }
+
+                // ✅ Konfirmasi update
                 DialogResult result = MessageBox.Show(
                     "Apakah Anda yakin ingin mengupdate data ini?",
                     "Konfirmasi Update",
                     MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
+                    MessageBoxIcon.Question
+                );
 
                 if (result != DialogResult.Yes)
                     return;
 
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(kn.connectionString()))
                 {
                     conn.Open();
                     SqlTransaction transaction = conn.BeginTransaction();
 
-                    using (SqlCommand cmd = new SqlCommand("sp_UpdateRiwayatMaintainence", conn, transaction))
+                    try
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        cmd.Parameters.AddWithValue("@ID_Riwayat", idRiwayat);
-                        cmd.Parameters.AddWithValue("@ID_Kamera", cmbKamera.SelectedValue);
-                        cmd.Parameters.AddWithValue("@ID_Teknisi", cmbTeknisi.SelectedValue);
-                        cmd.Parameters.AddWithValue("@Tanggal_Maintenance", tanggal);
-                        cmd.Parameters.AddWithValue("@Keterangan", cmbKeterangan.SelectedItem?.ToString());
-
-                        // Gunakan SqlParameter untuk ReturnValue
-                        SqlParameter returnValue = cmd.Parameters.Add("@RowCount", SqlDbType.Int); // Nama parameter yang lebih deskriptif
-                        returnValue.Direction = ParameterDirection.ReturnValue;
-
-                        try
+                        using (SqlCommand cmd = new SqlCommand("sp_UpdateRiwayatMaintainence", conn, transaction))
                         {
+                            cmd.CommandType = CommandType.StoredProcedure;
+
+                            cmd.Parameters.AddWithValue("@ID_Riwayat", idRiwayat);
+                            cmd.Parameters.AddWithValue("@ID_Kamera", idKameraBaru);
+                            cmd.Parameters.AddWithValue("@ID_Teknisi", idTeknisiBaru);
+                            cmd.Parameters.AddWithValue("@Tanggal_Maintenance", tanggalBaru);
+                            cmd.Parameters.AddWithValue("@Keterangan", keteranganBaru);
+
+                            SqlParameter returnValue = new SqlParameter
+                            {
+                                Direction = ParameterDirection.ReturnValue
+                            };
+                            cmd.Parameters.Add(returnValue);
+
                             cmd.ExecuteNonQuery();
-                            int rowCount = (int)returnValue.Value; // Ambil nilai dari parameter ReturnValue
+                            int rowCount = Convert.ToInt32(returnValue.Value);
 
                             if (rowCount > 0)
                             {
                                 transaction.Commit();
-                                MessageBox.Show("Data berhasil diupdate.");
+                                MessageBox.Show("Data berhasil diupdate.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 RefreshDataGrid();
                             }
                             else
@@ -379,16 +469,16 @@ namespace CRUDUcp1
                                 MessageBox.Show("Gagal mengupdate data. Data tidak ditemukan.", "Update Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
                         }
-                        catch (SqlException ex)
-                        {
-                            transaction.Rollback();
-                            MessageBox.Show("SQL Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        catch (Exception ex)
-                        {
-                            transaction.Rollback();
-                            MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("SQL Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -398,72 +488,80 @@ namespace CRUDUcp1
             }
         }
 
-
         private void btnHapus_Click(object sender, EventArgs e)
         {
-            if (dgvMaintenance.CurrentRow != null &&
-           dgvMaintenance.CurrentRow.Cells["ID_Riwayat"].Value != null &&
-           int.TryParse(dgvMaintenance.CurrentRow.Cells["ID_Riwayat"].Value.ToString(), out int idRiwayat))
+            // Validasi: pastikan baris dipilih dan ID_Riwayat valid
+            if (dgvMaintenance.SelectedRows.Count == 0 || dgvMaintenance.CurrentRow == null)
             {
-                DialogResult result = MessageBox.Show(
-                    "Yakin ingin menghapus data ini?",
-                    "Konfirmasi Penghapusan", // Ubah judul konfirmasi
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                );
+                MessageBox.Show("Silakan pilih data yang ingin dihapus dari tabel.", "Tidak Ada Data Terpilih", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-                if (result == DialogResult.Yes)
+            var selectedRow = dgvMaintenance.CurrentRow;
+
+            if (selectedRow.Cells["ID_Riwayat"].Value == null ||
+                string.IsNullOrWhiteSpace(selectedRow.Cells["ID_Riwayat"].Value.ToString()) ||
+                !int.TryParse(selectedRow.Cells["ID_Riwayat"].Value.ToString(), out int idRiwayat))
+            {
+                MessageBox.Show("Data tidak valid atau ID Riwayat kosong. Tidak dapat menghapus.", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DialogResult result = MessageBox.Show(
+                "Yakin ingin menghapus data ini?",
+                "Konfirmasi Penghapusan",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                using (SqlConnection conn = new SqlConnection(kn.connectionString()))
                 {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    conn.Open();
+                    SqlTransaction transaction = conn.BeginTransaction();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteRiwayatMaintainence", conn, transaction))
                     {
-                        conn.Open();
-                        SqlTransaction transaction = conn.BeginTransaction();
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                        using (SqlCommand cmd = new SqlCommand("sp_DeleteRiwayatMaintainence", conn, transaction))
+                        // Parameter input
+                        cmd.Parameters.AddWithValue("@ID_Riwayat", idRiwayat);
+
+                        // Parameter output
+                        SqlParameter outputParam = new SqlParameter("@RowsAffected", SqlDbType.Int)
                         {
-                            cmd.CommandType = CommandType.StoredProcedure;
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(outputParam);
 
-                            // Parameter input
-                            cmd.Parameters.AddWithValue("@ID_Riwayat", idRiwayat);
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
+                            int rowsAffected = (int)outputParam.Value;
 
-                            // Parameter output
-                            SqlParameter outputParam = new SqlParameter("@RowsAffected", SqlDbType.Int)
+                            if (rowsAffected > 0)
                             {
-                                Direction = ParameterDirection.Output
-                            };
-                            cmd.Parameters.Add(outputParam);
-
-                            try
-                            {
-                                cmd.ExecuteNonQuery();
-                                int rowsAffected = (int)outputParam.Value;
-
-                                if (rowsAffected > 0)
-                                {
-                                    transaction.Commit();
-                                    MessageBox.Show("Data berhasil dihapus.");
-                                    RefreshDataGrid();
-                                }
-                                else
-                                {
-                                    transaction.Rollback();
-                                    MessageBox.Show("Gagal menghapus data. Data tidak ditemukan.", "Penghapusan Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                }
+                                transaction.Commit();
+                                MessageBox.Show("Data berhasil dihapus.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                RefreshDataGrid();
                             }
-                            catch (Exception ex)
+                            else
                             {
                                 transaction.Rollback();
-                                MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Gagal menghapus data. Data tidak ditemukan.", "Penghapusan Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
             }
-            else
-            {
-                MessageBox.Show("Silakan pilih data yang ingin dihapus.", "Pilih Data", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
         }
+
 
 
         private void dgvMaintenance_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -573,7 +671,7 @@ namespace CRUDUcp1
 
         private void AnalyzeQuery(string sqlQuery)
         {
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new SqlConnection(kn.connectionString()))
             {
                 // Event InfoMessage menangani pesan dari SET STATISTICS IO/TIME
                 conn.InfoMessage += (s, e) => MessageBox.Show(e.Message, "INFORMASI STATISTIK", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -621,6 +719,11 @@ namespace CRUDUcp1
         private void Maintenance_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            RefreshDataGrid();
         }
     }
 }
